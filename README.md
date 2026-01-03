@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # EduMat - College Material Sharing Platform
 
 A comprehensive web application for college students to upload, share, and access study materials. Built with React (frontend) and Spring Boot (backend) with JWT authentication and role-based access control.
@@ -373,3 +374,7 @@ For support and questions:
 - Configure backup strategies
 - Implement SSL/TLS certificates
 - Set up proper CORS for production domains
+=======
+# EduShare
+This project is a materials and documents sharing website for students where users and admins upload academic PDFs. User uploads are visible only after admin approval to ensure quality. I mainly worked on the backend using Spring Boot, building secure REST APIs, JWT authentication, and role-based access control, with React used for the frontend.
+>>>>>>> ac7dfa464b0f98450ff7470c83c09635222b53e3
