@@ -82,7 +82,7 @@ const Landing = () => {
   return (
     <div style={containerStyle}>
       <div style={heroStyle}>
-        <h1 style={titleStyle}>EduMat</h1>
+        <h1 style={titleStyle}>EduShare</h1>
         <p style={subtitleStyle}>
           Your College Material Sharing Platform
         </p>
@@ -116,7 +116,7 @@ const Landing = () => {
       </div>
 
       <div style={{ marginTop: '3rem', padding: '2rem', backgroundColor: '#f5f5f5', borderRadius: '0.5rem' }}>
-        <h3 style={{ color: '#333333', marginBottom: '1rem' }}>Why Join EduMat?</h3>
+        <h3 style={{ color: '#333333', marginBottom: '1rem' }}>Why Join EduShare?</h3>
         <ul style={{ textAlign: 'left', color: '#666666', lineHeight: '1.8' }}>
           <li>✅ Free access to educational resources</li>
           <li>✅ Upload and share your study materials</li>

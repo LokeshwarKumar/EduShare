@@ -124,7 +124,7 @@ const Navbar = () => {
     <nav style={navbar}>
       <div style={container}>
         <Link to={isAuthenticated ? '/' : '/login'} style={logo}>
-          EduMat
+          EduShare
         </Link>
 
         {/* Desktop Menu */}

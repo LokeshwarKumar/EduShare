@@ -126,7 +126,7 @@ const Home = () => {
     <div style={containerStyle}>
       {/* Hero Section */}
       <div style={heroStyle}>
-        <h1 style={titleStyle}>EduMat</h1>
+        <h1 style={titleStyle}>EduShare</h1>
         <p style={subtitleStyle}>
           Your comprehensive platform for sharing and accessing college study materials. 
           Connect, collaborate, and excel together.
