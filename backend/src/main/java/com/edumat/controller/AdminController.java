@@ -3,6 +3,7 @@ package com.edumat.controller;
 import com.edumat.dto.ApprovalRequest;
 import com.edumat.dto.MaterialResponse;
 import com.edumat.dto.MessageResponse;
+import com.edumat.dto.UserResponse;
 import com.edumat.model.ApprovalStatus;
 import com.edumat.model.Material;
 import com.edumat.model.User;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -93,9 +95,12 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return ResponseEntity.ok(users);
+        List<UserResponse> responses = users.stream()
+                .map(this::convertToUserResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/users/count")
@@ -132,6 +137,27 @@ public class AdminController {
         response.setUploadDate(material.getUploadDate());
         response.setApprovalDate(material.getApprovalDate());
         response.setDownloadCount(material.getDownloadCount());
+        return response;
+    }
+
+    private UserResponse convertToUserResponse(User user) {
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setUsername(user.getUsername());
+        response.setEmail(user.getEmail());
+        response.setFirstName(user.getFirstName());
+        response.setLastName(user.getLastName());
+        response.setDepartment(user.getDepartment());
+        response.setSemester(user.getSemester());
+        response.setCreatedAt(user.getCreatedAt());
+        response.setUpdatedAt(user.getUpdatedAt());
+        
+        // Convert roles to string names
+        Set<String> roleNames = user.getRoles().stream()
+                .map(role -> role.getName().toString())
+                .collect(Collectors.toSet());
+        response.setRoles(roleNames);
+        
         return response;
     }
 }
