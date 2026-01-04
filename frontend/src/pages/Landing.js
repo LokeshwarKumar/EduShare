@@ -18,7 +18,7 @@ const Landing = () => {
 
   const titleStyle = {
     fontSize: '3rem',
-    color: '#333333',
+    color: '#000000',
     marginBottom: '1rem',
     fontWeight: 'bold'
   };
@@ -116,14 +116,14 @@ const Landing = () => {
       </div>
 
       <div style={{ marginTop: '3rem', padding: '2rem', backgroundColor: '#f5f5f5', borderRadius: '0.5rem' }}>
-        <h3 style={{ color: '#333333', marginBottom: '1rem' }}>Why Join EduShare?</h3>
-        <ul style={{ textAlign: 'left', color: '#666666', lineHeight: '1.8' }}>
-          <li>✅ Free access to educational resources</li>
-          <li>✅ Upload and share your study materials</li>
-          <li>✅ Organized by subject and department</li>
-          <li>✅ Admin-approved quality content</li>
-          <li>✅ Easy search and filtering</li>
-          <li>✅ Track your downloads and contributions</li>
+        <h3 style={{ color: '#000000', marginBottom: '1rem' }}>Why Join EduShare?</h3>
+        <ul style={{ textAlign: 'left', color: '#000000', lineHeight: '1.8' }}>
+          <li>Free access to educational resources</li>
+          <li>Upload and share your study materials</li>
+          <li>Organized by subject and department</li>
+          <li>Admin-approved quality content</li>
+          <li>Easy search and filtering</li>
+          <li>Track your downloads and contributions</li>
         </ul>
       </div>
     </div>
