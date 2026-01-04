@@ -10,7 +10,6 @@ import com.edumat.security.services.UserDetailsImpl;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.security.Key;
 
 @Component
 public class JwtUtils {
