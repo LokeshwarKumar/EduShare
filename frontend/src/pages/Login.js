@@ -73,7 +73,7 @@ const Login = () => {
   };
 
   const buttonStyle = {
-    backgroundColor: '#999999',
+    backgroundColor: '#000000',
     color: 'white',
     border: 'none',
     padding: '0.75rem',
