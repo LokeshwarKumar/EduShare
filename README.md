@@ -106,22 +106,6 @@ npm start
 
 The frontend will start on `http://localhost:3000`
 
-## 🔐 Default Credentials
-
-### Admin Account
-- **Username**: `admin`
-- **Password**: `password123`
-
-### Student Accounts
-- **Username**: `john_student`
-- **Password**: `password123`
-
-- **Username**: `jane_student`
-- **Password**: `password123`
-
-- **Username**: `mike_student`
-- **Password**: `password123`
-
 ## 📁 Project Structure
 
 ```
