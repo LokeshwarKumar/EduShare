@@ -106,7 +106,10 @@ npm start
 
 The frontend will start on `http://localhost:3000`
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 725547eef5c6415c2921f392aea7e4bce835c9a8
 ## 📁 Project Structure
 
 ```
