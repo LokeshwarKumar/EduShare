@@ -170,10 +170,7 @@ const AdminDashboard = () => {
       const token = authService.getToken();
       const viewUrl = `/api/admin/materials/${materialId}/view`;
       
-      // Open new window for preview
-      const newWindow = window.open('', '_blank');
-      
-      // Fetch file with authentication
+      // Fetch material view information
       const response = await fetch(viewUrl, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -181,13 +178,18 @@ const AdminDashboard = () => {
       });
       
       if (response.ok) {
-        // Convert response to blob and create object URL
-        const blob = await response.blob();
-        const fileUrl = URL.createObjectURL(blob);
-        newWindow.location.href = fileUrl;
+        const data = await response.json();
+        
+        // Open Cloudinary URL directly in new window
+        if (data.viewUrl) {
+          const newWindow = window.open(data.viewUrl, '_blank');
+          if (!newWindow) {
+            alert('Please allow popups to view the file');
+          }
+        } else {
+          alert('No file URL available for this material');
+        }
       } else {
-        // Close window and show error if file loading fails
-        newWindow.close();
         alert('Failed to load file for preview');
       }
     } catch (error) {

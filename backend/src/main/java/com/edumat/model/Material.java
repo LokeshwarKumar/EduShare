@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "materials")
 public class Material {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,16 +29,17 @@ public class Material {
 
     private Integer semester;
 
+    // 🔥 Cloudinary URL (instead of local file path)
     @NotBlank
     @Size(max = 500)
-    @Column(name = "file_path")
-    private String filePath;
+    @Column(name = "file_url", nullable = false)
+    private String fileUrl;
 
-    @Size(max = 100)
+    @Size(max = 255)
     @Column(name = "file_name")
     private String fileName;
 
-    @Size(max = 20)
+    @Size(max = 100)
     @Column(name = "file_type")
     private String fileType;
 
@@ -65,63 +67,147 @@ public class Material {
     @Column(name = "download_count")
     private Long downloadCount = 0L;
 
+    // Constructor
     public Material() {
         this.uploadDate = LocalDateTime.now();
         this.approvalStatus = ApprovalStatus.PENDING;
+        this.downloadCount = 0L;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // ========================
+    // Getters and Setters
+    // ========================
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Subject getSubject() { return subject; }
-    public void setSubject(Subject subject) { this.subject = subject; }
+    public String getTitle() {
+        return title;
+    }
 
-    public String getDepartment() { return department; }
-    public void setDepartment(String department) { this.department = department; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public Integer getSemester() { return semester; }
-    public void setSemester(Integer semester) { this.semester = semester; }
+    public String getDescription() {
+        return description;
+    }
 
-    public String getFilePath() { return filePath; }
-    public void setFilePath(String filePath) { this.filePath = filePath; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public String getFileName() { return fileName; }
-    public void setFileName(String fileName) { this.fileName = fileName; }
+    public Subject getSubject() {
+        return subject;
+    }
 
-    public String getFileType() { return fileType; }
-    public void setFileType(String fileType) { this.fileType = fileType; }
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
 
-    public Long getFileSize() { return fileSize; }
-    public void setFileSize(Long fileSize) { this.fileSize = fileSize; }
+    public String getDepartment() {
+        return department;
+    }
 
-    public ApprovalStatus getApprovalStatus() { return approvalStatus; }
-    public void setApprovalStatus(ApprovalStatus approvalStatus) { 
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public Integer getSemester() {
+        return semester;
+    }
+
+    public void setSemester(Integer semester) {
+        this.semester = semester;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
+    }
+
+    public Long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    public ApprovalStatus getApprovalStatus() {
+        return approvalStatus;
+    }
+
+    public void setApprovalStatus(ApprovalStatus approvalStatus) {
         this.approvalStatus = approvalStatus;
         if (approvalStatus == ApprovalStatus.APPROVED) {
             this.approvalDate = LocalDateTime.now();
         }
     }
 
-    public String getRejectionReason() { return rejectionReason; }
-    public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
 
-    public User getUploadedBy() { return uploadedBy; }
-    public void setUploadedBy(User uploadedBy) { this.uploadedBy = uploadedBy; }
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
 
-    public LocalDateTime getUploadDate() { return uploadDate; }
-    public void setUploadDate(LocalDateTime uploadDate) { this.uploadDate = uploadDate; }
+    public User getUploadedBy() {
+        return uploadedBy;
+    }
 
-    public LocalDateTime getApprovalDate() { return approvalDate; }
-    public void setApprovalDate(LocalDateTime approvalDate) { this.approvalDate = approvalDate; }
+    public void setUploadedBy(User uploadedBy) {
+        this.uploadedBy = uploadedBy;
+    }
 
-    public Long getDownloadCount() { return downloadCount; }
-    public void setDownloadCount(Long downloadCount) { this.downloadCount = downloadCount; }
+    public LocalDateTime getUploadDate() {
+        return uploadDate;
+    }
+
+    public void setUploadDate(LocalDateTime uploadDate) {
+        this.uploadDate = uploadDate;
+    }
+
+    public LocalDateTime getApprovalDate() {
+        return approvalDate;
+    }
+
+    public void setApprovalDate(LocalDateTime approvalDate) {
+        this.approvalDate = approvalDate;
+    }
+
+    public Long getDownloadCount() {
+        return downloadCount;
+    }
+
+    public void setDownloadCount(Long downloadCount) {
+        this.downloadCount = downloadCount;
+    }
 
     public void incrementDownloadCount() {
         this.downloadCount++;

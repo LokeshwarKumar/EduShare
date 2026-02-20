@@ -30,15 +30,43 @@ const MaterialDetails = () => {
       setDownloading(true);
       const response = await materialService.downloadMaterial(id);
       
-      // Create download link
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', material.fileName);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      // Handle Cloudinary URL response
+      if (response.data.downloadUrl) {
+        try {
+          // Fetch file as blob from Cloudinary
+          const fileResponse = await fetch(response.data.downloadUrl);
+          const blob = await fileResponse.blob();
+          
+          // Create download link
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = response.data.fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error('Error fetching file:', error);
+          // Fallback to opening in new tab
+          const link = document.createElement('a');
+          link.href = response.data.downloadUrl;
+          link.target = '_blank';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      } else {
+        // Fallback to blob handling for local files
+        const blob = new Blob([response.data]);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = response.data.fileName || 'material';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
     } catch (error) {
       setError('Failed to download file');
     } finally {

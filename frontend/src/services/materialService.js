@@ -51,9 +51,46 @@ const materialService = {
 
   // Download material
   downloadMaterial: async (id) => {
-    const response = await axios.get(`${API_BASE_URL}/materials/download/${id}`, {
-      responseType: 'blob'
-    });
+    const response = await axios.get(`${API_BASE_URL}/materials/download/${id}`);
+    
+    // Handle Cloudinary URL response
+    if (response.data.downloadUrl) {
+      try {
+        // Fetch the file as blob from Cloudinary
+        const fileResponse = await fetch(response.data.downloadUrl);
+        const blob = await fileResponse.blob();
+        
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = response.data.fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Error fetching file:', error);
+        // Fallback to opening in new tab
+        const link = document.createElement('a');
+        link.href = response.data.downloadUrl;
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } else {
+      // Fallback to blob handling for local files
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = response.data.fileName || 'material';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    
     return response;
   },
 
