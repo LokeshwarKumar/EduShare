@@ -4,7 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import PrivateRoute from './components/PrivateRoute';
 import AdminRoute from './components/AdminRoute';
 
-// Pages
+// ==================== PAGE IMPORTS ====================
 import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -15,23 +15,40 @@ import UploadMaterial from './pages/UploadMaterial';
 import MyMaterials from './pages/MyMaterials';
 import AdminDashboard from './pages/AdminDashboard';
 
-// Components
+// ==================== COMPONENT IMPORTS ====================
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
+/**
+ * Main Application Component
+ * 
+ * This component defines the routing structure and authentication flow
+ * for the EduShare platform. It includes:
+ * - Public routes (login, register)
+ * - Protected routes (authenticated users only)
+ * - Admin routes (admin users only)
+ * 
+ * @author EduShare Team
+ * @version 1.0.0
+ */
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="App">
+          {/* Navigation Header */}
           <Navbar />
+          
+          {/* Main Content Area */}
           <main style={{ minHeight: '80vh', padding: '20px', backgroundColor: '#f5f5f5' }}>
             <Routes>
-              {/* Public Routes - Only Login and Register */}
+              {/* ==================== PUBLIC ROUTES ==================== */}
+              {/* Only Login and Register are accessible without authentication */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               
-              {/* Protected Routes - Require Authentication */}
+              {/* ==================== PROTECTED ROUTES ==================== */}
+              {/* Require authentication */}
               <Route path="/" element={
                 <PrivateRoute>
                   <Landing />
@@ -58,17 +75,21 @@ function App() {
                 </PrivateRoute>
               } />
               
-              {/* Admin Routes - Require Admin Role */}
+              {/* ==================== ADMIN ROUTES ==================== */}
+              {/* Require admin role */}
               <Route path="/admin" element={
                 <AdminRoute>
                   <AdminDashboard />
                 </AdminRoute>
               } />
               
-              {/* Fallback - Redirect to login */}
+              {/* ==================== FALLBACK ROUTE ==================== */}
+              {/* Redirect any unknown routes to login */}
               <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
           </main>
+          
+          {/* Footer */}
           <Footer />
         </div>
       </Router>

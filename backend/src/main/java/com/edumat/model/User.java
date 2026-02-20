@@ -8,42 +8,72 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * User Entity
+ * 
+ * Represents a user in the EduShare platform with the following attributes:
+ * - Basic user information (username, email, name)
+ * - Academic details (department, semester)
+ * - Security information (password, roles)
+ * - Timestamps (created, updated)
+ * 
+ * @author EduShare Team
+ * @version 1.0.0
+ */
 @Entity
 @Table(name = "users")
 public class User {
+    // ==================== PRIMARY KEY ====================
+    
+    /** Unique identifier for the user */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // ==================== USER INFORMATION ====================
+    
+    /** Unique username for login (required, max 100 chars, unique) */
     @NotBlank
     @Size(max = 100)
     @Column(unique = true)
     private String username;
 
+    /** User email address (required, valid email format, unique) */
     @NotBlank
     @Size(max = 100)
     @Email
     @Column(unique = true)
     private String email;
 
+    /** Encrypted user password (required, max 100 chars) */
     @NotBlank
     @Size(max = 100)
     private String password;
 
+    /** User first name (optional, max 100 chars) */
     @Size(max = 100)
     private String firstName;
 
+    /** User last name (optional, max 100 chars) */
     @Size(max = 100)
     private String lastName;
 
+    // ==================== ACADEMIC INFORMATION ====================
+    
+    /** Academic department (optional, max 20 chars) */
     @Size(max = 20)
     private String department;
 
+    /** Current semester/academic year (optional) */
     private Integer semester;
 
+    // ==================== TIMESTAMPS ====================
+    
+    /** Timestamp when user account was created */
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    /** Timestamp when user account was last updated */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 

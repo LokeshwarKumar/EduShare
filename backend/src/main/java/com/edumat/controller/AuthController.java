@@ -25,39 +25,73 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Authentication Controller
+ * 
+ * Handles user authentication and registration endpoints:
+ * - POST /api/auth/signin - User login
+ * - POST /api/auth/signup - User registration  
+ * - GET /api/auth/me - Get current user info
+ * 
+ * @author EduShare Team
+ * @version 1.0.0
+ */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    // ==================== DEPENDENCIES ====================
+    
+    /** Authentication manager for user login validation */
     @Autowired
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
 
+    /** User data access layer */
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
+    /** Role data access layer */
     @Autowired
-    RoleRepository roleRepository;
+    private RoleRepository roleRepository;
 
+    /** Password encoder for secure password hashing */
     @Autowired
-    PasswordEncoder encoder;
+    private PasswordEncoder encoder;
 
+    /** JWT utility for token generation and validation */
     @Autowired
-    JwtUtils jwtUtils;
+    private JwtUtils jwtUtils;
 
+    // ==================== API ENDPOINTS ====================
+    
+    /**
+     * User authentication endpoint
+     * 
+     * @param loginRequest User login credentials (username, password)
+     * @return JWT token with user details
+     */
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
+        // Authenticate user credentials
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+        // Set authentication in security context
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        
+        // Generate JWT token
         String jwt = jwtUtils.generateJwtToken(authentication);
 
+        // Extract user details from authentication
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        
+        // Convert user roles to string list
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
+        // Return JWT response with user details
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
@@ -67,20 +101,30 @@ public class AuthController {
                 roles));
     }
 
+    /**
+     * User registration endpoint
+     * 
+     * @param signUpRequest User registration details (username, email, password, etc.)
+     * @return Success message or error response
+     */
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+        
+        // Check if username is already taken
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Username is already taken!"));
         }
 
+        // Check if email is already in use
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
+        // Create new user entity
         User user = new User();
         user.setUsername(signUpRequest.getUsername());
         user.setEmail(signUpRequest.getEmail());
@@ -90,26 +134,39 @@ public class AuthController {
         user.setDepartment(signUpRequest.getDepartment());
         user.setSemester(signUpRequest.getSemester());
 
+        // Assign default USER role
         Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
         Set<Role> roles = new HashSet<>();
         roles.add(userRole);
         user.setRoles(roles);
+        
+        // Save user to database
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
 
+    /**
+     * Get current authenticated user information
+     * 
+     * @param authentication Spring Security authentication object
+     * @return Current user details with roles
+     */
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         try {
+            // Extract user details from authentication
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            
+            // Fetch full user entity from database
             User user = userRepository.findById(userDetails.getId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
+            // Create response with user details and roles
             JwtResponse response = new JwtResponse(
-                    null,
+                    null, // No token needed for this endpoint
                     user.getId(),
                     user.getUsername(),
                     user.getEmail(),

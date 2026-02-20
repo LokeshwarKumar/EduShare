@@ -2,29 +2,73 @@ import React, { useState, useEffect } from 'react';
 import materialService from '../services/materialService';
 import authService from '../services/authService';
 
+/**
+ * Admin Dashboard Component
+ * 
+ * Provides administrative interface for managing the EduShare platform:
+ * - Dashboard statistics overview
+ * - Pending material approvals
+ * - All materials management
+ * - User management
+ * - Material preview functionality
+ * 
+ * @author EduShare Team
+ * @version 1.0.0
+ */
 const AdminDashboard = () => {
+  // ==================== STATE MANAGEMENT ====================
+  
+  /** Dashboard statistics (users, materials, approvals) */
   const [stats, setStats] = useState({});
+  
+  /** List of materials pending approval */
   const [pendingMaterials, setPendingMaterials] = useState([]);
+  
+  /** List of all materials in the system */
   const [allMaterials, setAllMaterials] = useState([]);
+  
+  /** List of all registered users */
   const [users, setUsers] = useState([]);
+  
+  /** Currently active tab in the dashboard */
   const [activeTab, setActiveTab] = useState('dashboard');
+  
+  /** Loading state for async operations */
   const [loading, setLoading] = useState(true);
+  
+  /** Rejection reason for material rejection modal */
   const [rejectionReason, setRejectionReason] = useState('');
+  
+  /** Currently selected material for rejection */
   const [selectedMaterial, setSelectedMaterial] = useState(null);
 
+  // ==================== LIFECYCLE HOOKS ====================
+  
+  /**
+   * Fetch dashboard data on component mount
+   */
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
+  // ==================== DATA FETCHING ====================
+  
+  /**
+   * Fetches all dashboard data from API
+   * - Dashboard statistics
+   * - Pending materials
+   * - All materials
+   * - User list
+   */
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       
-      // Fetch dashboard stats
+      // Fetch dashboard statistics
       const statsResponse = await authService.get('/api/admin/dashboard');
       setStats(statsResponse.data);
 
-      // Fetch pending materials
+      // Fetch materials pending approval
       const pendingResponse = await materialService.getPendingMaterials();
       setPendingMaterials(pendingResponse.data);
 
@@ -32,7 +76,7 @@ const AdminDashboard = () => {
       const allResponse = await materialService.getAllMaterials();
       setAllMaterials(allResponse.data);
 
-      // Fetch users
+      // Fetch all users
       const usersResponse = await authService.get('/api/admin/users');
       setUsers(usersResponse.data);
 
@@ -43,16 +87,27 @@ const AdminDashboard = () => {
     }
   };
 
+  // ==================== MATERIAL MANAGEMENT ====================
+  
+  /**
+   * Approves a material and refreshes dashboard data
+   * @param {number} materialId - ID of material to approve
+   */
   const handleApprove = async (materialId) => {
     try {
       await materialService.approveMaterial(materialId);
-      fetchDashboardData(); // Refresh data
+      fetchDashboardData(); // Refresh all data
     } catch (error) {
       console.error('Error approving material:', error);
     }
   };
 
+  /**
+   * Rejects a material with provided reason and refreshes dashboard
+   * @param {number} materialId - ID of material to reject
+   */
   const handleReject = async (materialId) => {
+    // Validate rejection reason is provided
     if (!rejectionReason.trim()) {
       alert('Please provide a rejection reason');
       return;
@@ -60,51 +115,65 @@ const AdminDashboard = () => {
 
     try {
       await materialService.rejectMaterial(materialId, rejectionReason);
+      // Reset rejection form
       setRejectionReason('');
       setSelectedMaterial(null);
-      fetchDashboardData(); // Refresh data
+      fetchDashboardData(); // Refresh all data
     } catch (error) {
       console.error('Error rejecting material:', error);
     }
   };
 
+  /**
+   * Deletes a material after confirmation and refreshes dashboard
+   * @param {number} materialId - ID of material to delete
+   */
   const handleDeleteMaterial = async (materialId) => {
+    // Confirm deletion with user
     if (window.confirm('Are you sure you want to delete this material?')) {
       try {
         await materialService.deleteMaterial(materialId);
-        fetchDashboardData(); // Refresh data
+        fetchDashboardData(); // Refresh all data
       } catch (error) {
         console.error('Error deleting material:', error);
       }
     }
   };
 
+  // ==================== USER MANAGEMENT ====================
+  
+  /**
+   * Deletes a user after confirmation and refreshes dashboard
+   * @param {number} userId - ID of user to delete
+   */
   const handleDeleteUser = async (userId) => {
+    // Confirm deletion with user
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
         await authService.delete(`/api/admin/users/${userId}`);
-        fetchDashboardData(); // Refresh data
+        fetchDashboardData(); // Refresh all data
       } catch (error) {
         console.error('Error deleting user:', error);
       }
     }
   };
 
+  // ==================== FILE PREVIEW ====================
+  
+  /**
+   * Opens material file in new window for admin preview
+   * Handles authentication and file loading
+   * @param {number} materialId - ID of material to preview
+   */
   const handleViewMaterial = async (materialId) => {
     try {
       const token = authService.getToken();
       const viewUrl = `/api/admin/materials/${materialId}/view`;
       
-      // Open in new window with proper authentication
+      // Open new window for preview
       const newWindow = window.open('', '_blank');
       
-      // Create a form to submit with proper headers
-      const form = document.createElement('form');
-      form.method = 'GET';
-      form.action = viewUrl;
-      form.target = '_blank';
-      
-      // Add authorization header via fetch and blob
+      // Fetch file with authentication
       const response = await fetch(viewUrl, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -112,10 +181,12 @@ const AdminDashboard = () => {
       });
       
       if (response.ok) {
+        // Convert response to blob and create object URL
         const blob = await response.blob();
         const fileUrl = URL.createObjectURL(blob);
         newWindow.location.href = fileUrl;
       } else {
+        // Close window and show error if file loading fails
         newWindow.close();
         alert('Failed to load file for preview');
       }
@@ -125,6 +196,13 @@ const AdminDashboard = () => {
     }
   };
 
+  // ==================== UTILITY FUNCTIONS ====================
+  
+  /**
+   * Formats file size in bytes to human readable format
+   * @param {number} bytes - File size in bytes
+   * @returns {string} Formatted file size (e.g., "1.5 MB")
+   */
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -133,6 +211,11 @@ const AdminDashboard = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  /**
+   * Formats date string to readable format
+   * @param {string} dateString - ISO date string
+   * @returns {string} Formatted date (e.g., "Jan 3, 2026")
+   */
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
