@@ -113,23 +113,19 @@ public class MaterialController {
                 .orElseThrow(() -> new RuntimeException("Subject not found"));
 
         try {
-            // Create upload directory if it doesn't exist
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            // Generate unique filename
             String originalFilename = file.getOriginalFilename();
             String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String newFilename = timestamp + "_" + user.getId() + fileExtension;
 
-            // Save file
             Path filePath = uploadPath.resolve(newFilename);
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Create material entity
             Material material = new Material();
             material.setTitle(request.getTitle());
             material.setDescription(request.getDescription());
@@ -138,11 +134,9 @@ public class MaterialController {
             material.setSemester(request.getSemester());
             material.setFilePath(filePath.toString());
             material.setFileName(originalFilename);
-            material.setFileType(fileExtension.substring(1)); // Remove the dot
+            material.setFileType(fileExtension.substring(1));
             material.setFileSize(file.getSize());
             material.setUploadedBy(user);
-
-            // Auto-approve if admin, otherwise pending
             boolean isAdmin = userDetails.getAuthorities().stream()
                     .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
             if (isAdmin) {

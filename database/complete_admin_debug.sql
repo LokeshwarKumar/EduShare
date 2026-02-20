@@ -1,7 +1,6 @@
--- Complete admin debug test
+
 USE edumat_db;
 
--- 1. Check all users and their roles
 SELECT 
     u.id,
     u.username,
@@ -16,14 +15,10 @@ LEFT JOIN roles r ON ur.role_id = r.id
 GROUP BY u.id, u.username, u.email, u.first_name, u.last_name, u.password
 ORDER BY u.id;
 
--- 2. Check if roles table is correct
 SELECT * FROM roles;
 
--- 3. Check user_roles table
 SELECT * FROM user_roles;
 
--- 4. Test password verification for superadmin
--- This will show if the password hash matches 'password123'
 SELECT 
     username,
     password,

@@ -90,6 +90,41 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleViewMaterial = async (materialId) => {
+    try {
+      const token = authService.getToken();
+      const viewUrl = `/api/admin/materials/${materialId}/view`;
+      
+      // Open in new window with proper authentication
+      const newWindow = window.open('', '_blank');
+      
+      // Create a form to submit with proper headers
+      const form = document.createElement('form');
+      form.method = 'GET';
+      form.action = viewUrl;
+      form.target = '_blank';
+      
+      // Add authorization header via fetch and blob
+      const response = await fetch(viewUrl, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const fileUrl = URL.createObjectURL(blob);
+        newWindow.location.href = fileUrl;
+      } else {
+        newWindow.close();
+        alert('Failed to load file for preview');
+      }
+    } catch (error) {
+      console.error('Error viewing material:', error);
+      alert('Error loading file for preview');
+    }
+  };
+
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -337,6 +372,7 @@ const AdminDashboard = () => {
                 <tr>
                   <th style={tableHeaderStyle}>Title</th>
                   <th style={tableHeaderStyle}>Subject</th>
+                  <th style={tableHeaderStyle}>File Type</th>
                   <th style={tableHeaderStyle}>Uploaded By</th>
                   <th style={tableHeaderStyle}>Upload Date</th>
                   <th style={tableHeaderStyle}>Actions</th>
@@ -348,10 +384,27 @@ const AdminDashboard = () => {
                     <td style={tableCellStyle}>{material.title}</td>
                     <td style={tableCellStyle}>{material.subjectName}</td>
                     <td style={tableCellStyle}>
+                      <span style={{ 
+                        backgroundColor: '#f0f0f0', 
+                        padding: '0.25rem 0.5rem', 
+                        borderRadius: '0.25rem',
+                        fontSize: '0.85rem',
+                        textTransform: 'uppercase'
+                      }}>
+                        {material.fileType || 'Unknown'}
+                      </span>
+                    </td>
+                    <td style={tableCellStyle}>
                       {material.uploadedByFirstName} {material.uploadedByLastName}
                     </td>
                     <td style={tableCellStyle}>{formatDate(material.uploadDate)}</td>
                     <td style={tableCellStyle}>
+                      <button
+                        style={{ ...buttonStyle, backgroundColor: '#e3f2fd', color: '#1976d2' }}
+                        onClick={() => handleViewMaterial(material.id)}
+                      >
+                        View
+                      </button>
                       <button
                         style={buttonStyle}
                         onClick={() => handleApprove(material.id)}
@@ -381,6 +434,7 @@ const AdminDashboard = () => {
               <tr>
                 <th style={tableHeaderStyle}>Title</th>
                 <th style={tableHeaderStyle}>Subject</th>
+                <th style={tableHeaderStyle}>File Type</th>
                 <th style={tableHeaderStyle}>Status</th>
                 <th style={tableHeaderStyle}>Uploaded By</th>
                 <th style={tableHeaderStyle}>Upload Date</th>
@@ -392,12 +446,42 @@ const AdminDashboard = () => {
                 <tr key={material.id}>
                   <td style={tableCellStyle}>{material.title}</td>
                   <td style={tableCellStyle}>{material.subjectName}</td>
-                  <td style={tableCellStyle}>{material.approvalStatus}</td>
+                  <td style={tableCellStyle}>
+                    <span style={{ 
+                      backgroundColor: '#f0f0f0', 
+                      padding: '0.25rem 0.5rem', 
+                      borderRadius: '0.25rem',
+                      fontSize: '0.85rem',
+                      textTransform: 'uppercase'
+                    }}>
+                      {material.fileType || 'Unknown'}
+                    </span>
+                  </td>
+                  <td style={tableCellStyle}>
+                    <span style={{
+                      backgroundColor: material.approvalStatus === 'APPROVED' ? '#e8f5e8' : 
+                                       material.approvalStatus === 'REJECTED' ? '#ffe8e8' : '#fff3cd',
+                      color: material.approvalStatus === 'APPROVED' ? '#2e7d32' : 
+                             material.approvalStatus === 'REJECTED' ? '#c62828' : '#f57c00',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '0.25rem',
+                      fontSize: '0.85rem',
+                      fontWeight: 'bold'
+                    }}>
+                      {material.approvalStatus}
+                    </span>
+                  </td>
                   <td style={tableCellStyle}>
                     {material.uploadedByFirstName} {material.uploadedByLastName}
                   </td>
                   <td style={tableCellStyle}>{formatDate(material.uploadDate)}</td>
                   <td style={tableCellStyle}>
+                    <button
+                      style={{ ...buttonStyle, backgroundColor: '#e3f2fd', color: '#1976d2' }}
+                      onClick={() => handleViewMaterial(material.id)}
+                    >
+                      View
+                    </button>
                     <button
                       style={dangerButtonStyle}
                       onClick={() => handleDeleteMaterial(material.id)}

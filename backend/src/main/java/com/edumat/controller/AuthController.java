@@ -81,7 +81,6 @@ public class AuthController {
                     .body(new MessageResponse("Error: Email is already in use!"));
         }
 
-        // Create new user's account
         User user = new User();
         user.setUsername(signUpRequest.getUsername());
         user.setEmail(signUpRequest.getEmail());
@@ -110,7 +109,7 @@ public class AuthController {
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
             JwtResponse response = new JwtResponse(
-                    null, // token
+                    null,
                     user.getId(),
                     user.getUsername(),
                     user.getEmail(),

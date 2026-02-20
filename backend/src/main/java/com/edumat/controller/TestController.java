@@ -39,7 +39,6 @@ public class TestController {
                     .map(role -> role.getName().toString())
                     .toList());
             
-            // Test password matching
             boolean passwordMatches = passwordEncoder.matches("password123", user.getPassword());
             response.put("passwordMatches", passwordMatches);
             

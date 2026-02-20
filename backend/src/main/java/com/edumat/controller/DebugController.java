@@ -41,7 +41,6 @@ public class DebugController {
             userMap.put("department", user.getDepartment());
             userMap.put("semester", user.getSemester());
             
-            // Get roles
             Set<Role> roles = user.getRoles();
             List<String> roleNames = new ArrayList<>();
             for (Role role : roles) {
@@ -63,8 +62,6 @@ public class DebugController {
         Map<String, Object> result = new HashMap<>();
         result.put("raw", rawPassword);
         result.put("encoded", encodedPassword);
-        
-        // Check if admin user exists and compare passwords
         Optional<User> adminUser = userRepository.findByUsername("admin");
         if (adminUser.isPresent()) {
             User user = adminUser.get();
@@ -80,14 +77,12 @@ public class DebugController {
 
     @PostMapping("/create-admin")
     public ResponseEntity<Map<String, Object>> createAdmin() {
-        // Check if admin already exists
         if (userRepository.existsByUsername("admin")) {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Admin user already exists");
             return ResponseEntity.badRequest().body(error);
         }
 
-        // Create admin user
         User admin = new User();
         admin.setUsername("admin");
         admin.setEmail("admin@edumat.com");
@@ -95,8 +90,6 @@ public class DebugController {
         admin.setFirstName("Admin");
         admin.setLastName("User");
         admin.setDepartment("Administration");
-
-        // Get admin role
         Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                 .orElseThrow(() -> new RuntimeException("Admin role not found"));
 
@@ -105,10 +98,6 @@ public class DebugController {
         admin.setRoles(roles);
 
         User savedUser = userRepository.save(admin);
-
-        // Assign role
-        // Note: In a real app, you'd handle this properly with UserRoles table
-        // For debugging, we'll create a simple role assignment
         Map<String, Object> result = new HashMap<>();
         result.put("message", "Admin user created successfully");
         result.put("userId", savedUser.getId());

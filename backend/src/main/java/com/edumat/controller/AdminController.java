@@ -10,10 +10,17 @@ import com.edumat.model.User;
 import com.edumat.repository.MaterialRepository;
 import com.edumat.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,6 +101,44 @@ public class AdminController {
         return ResponseEntity.ok(new MessageResponse("Material deleted successfully"));
     }
 
+    @GetMapping("/materials/{id}/view")
+    public ResponseEntity<Resource> viewMaterial(@PathVariable Long id) throws IOException {
+        Material material = materialRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Material not found"));
+        
+        Path filePath = Paths.get(material.getFilePath());
+        Resource resource = new UrlResource(filePath.toUri());
+        
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new RuntimeException("File not found or not readable");
+        }
+        
+        String contentType = "application/octet-stream";
+        if (material.getFileType() != null) {
+            switch (material.getFileType().toLowerCase()) {
+                case "pdf":
+                    contentType = "application/pdf";
+                    break;
+                case "doc":
+                case "docx":
+                    contentType = "application/msword";
+                    break;
+                case "ppt":
+                case "pptx":
+                    contentType = "application/vnd.ms-powerpoint";
+                    break;
+                case "txt":
+                    contentType = "text/plain";
+                    break;
+            }
+        }
+        
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + material.getFileName() + "\"")
+                .body(resource);
+    }
+
     @GetMapping("/users")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -151,8 +196,6 @@ public class AdminController {
         response.setSemester(user.getSemester());
         response.setCreatedAt(user.getCreatedAt());
         response.setUpdatedAt(user.getUpdatedAt());
-        
-        // Convert roles to string names
         Set<String> roleNames = user.getRoles().stream()
                 .map(role -> role.getName().toString())
                 .collect(Collectors.toSet());

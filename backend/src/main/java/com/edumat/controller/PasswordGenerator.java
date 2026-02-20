@@ -22,8 +22,7 @@ public class PasswordGenerator {
         String encodedPassword = passwordEncoder.encode(password);
         response.put("password", password);
         response.put("hash", encodedPassword);
-        
-        // Test the hash immediately
+
         boolean matches = passwordEncoder.matches(password, encodedPassword);
         response.put("verification", matches ? "HASH_WORKS" : "HASH_FAILED");
         

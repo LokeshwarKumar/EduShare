@@ -1,18 +1,13 @@
--- EduMat Database Schema
--- College Material Sharing Platform
 
--- Create database
 CREATE DATABASE IF NOT EXISTS edumat_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE edumat_db;
 
--- Roles table
 CREATE TABLE roles (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Users table
 CREATE TABLE users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
@@ -25,8 +20,6 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
--- User roles junction table
 CREATE TABLE user_roles (
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
@@ -35,7 +28,6 @@ CREATE TABLE user_roles (
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
--- Subjects table
 CREATE TABLE subjects (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
@@ -43,8 +35,6 @@ CREATE TABLE subjects (
     department VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
--- Materials table
 CREATE TABLE materials (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
@@ -65,8 +55,6 @@ CREATE TABLE materials (
     FOREIGN KEY (subject_id) REFERENCES subjects(id),
     FOREIGN KEY (uploaded_by) REFERENCES users(id)
 );
-
--- Create indexes for better performance
 CREATE INDEX idx_materials_approval_status ON materials(approval_status);
 CREATE INDEX idx_materials_subject_id ON materials(subject_id);
 CREATE INDEX idx_materials_department ON materials(department);

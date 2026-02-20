@@ -15,10 +15,8 @@ public class UserResponse {
     private LocalDateTime updatedAt;
     private Set<String> roles;
 
-    // Constructors
     public UserResponse() {}
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
